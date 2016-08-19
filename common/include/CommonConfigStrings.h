@@ -16,6 +16,7 @@ const char* OptionStrings[] =
 	"Unlock Read Speed",
 	"OSReport",
 	"WiiU Widescreen", //Replaces USB
+	"Prime Memory Dumping",
 	"Drive Access LED",
 	"Log",
 	

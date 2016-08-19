@@ -51,6 +51,7 @@ enum ninconfigbitpos
 	NIN_CFG_BIT_CC_RUMBLE	= (17),
 	NIN_CFG_BIT_SKIP_IPL	= (18),
 	NIN_CFG_BIT_BBA_EMU		= (19),
+	NIN_CFG_BIT_PRIME_DUMP  = (25), //Offset to hopefully not run into official config later on (since it uses the same config file)
 
 	// Internal kernel settings.
 	NIN_CFG_BIT_MC_SLOTB	= (31),	// Slot B image is loaded
@@ -82,6 +83,7 @@ enum ninconfig
 	NIN_CFG_BBA_EMU		= (1<<NIN_CFG_BIT_BBA_EMU),
 
 	NIN_CFG_MC_SLOTB	= (1<<NIN_CFG_BIT_MC_SLOTB),
+	NIN_CFG_PRIME_DUMP = (1<<NIN_CFG_BIT_PRIME_DUMP),
 };
 
 enum ninextrasettings

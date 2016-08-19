@@ -37,11 +37,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GCAM.h"
 #include "TRI.h"
 #include "Patch.h"
-
+#include "net.h"
 #include "diskio.h"
 #include "usbstorage.h"
 #include "SDI.h"
 #include "ff_utf8.h"
+
+#include "PrimeMemoryDumping.h"
 
 //#define USE_OSREPORTDM 1
 
@@ -64,6 +66,8 @@ extern vu32 DisableSIPatch;
 extern vu32 bbaEmuWanted;
 extern char __bss_start, __bss_end;
 extern char __di_stack_addr, __di_stack_size;
+extern char __memoryDump_stack_addr, __memoryDump_stack_size;
+extern char __net_stack_addr, __net_stack_size;
 
 u32 virtentry = 0;
 u32 drcAddress = 0;
@@ -93,7 +97,7 @@ int _main( int argc, char *argv[] )
 	}
 
 	s32 ret = 0;
-	u32 DI_Thread = 0;
+	u32 DI_Thread = 0, Net_Thread = 0;
 
 	BootStatus(0, 0, 0);
 
@@ -240,6 +244,9 @@ int _main( int argc, char *argv[] )
 	thread_continue(DI_Thread);
 
 	DIinit(true);
+
+	Net_Thread = thread_create(NetThread, NULL, ((u32*)&__net_stack_addr), ((u32)(&__net_stack_size)) / sizeof(u32), 0x78, 1);
+	thread_continue(Net_Thread);
 
 	BootStatus(10, s_size, s_cnt);
 
@@ -389,7 +396,7 @@ int _main( int argc, char *argv[] )
 		}
 		else /* No device I/O so make sure this stays updated */
 			GetCurrentTime();
-		udelay(20); //wait for other threads
+		udelay(200); //wait for other threads
 
 		if( WaitForRealDisc == 1 )
 		{
@@ -534,7 +541,7 @@ int _main( int argc, char *argv[] )
 	IOS_Close(DI_Handle); //close game
 	thread_cancel(DI_Thread, 0);
 	DIUnregister();
-
+	thread_cancel(Net_Thread, 0);
 	if( ConfigGetConfig(NIN_CFG_MEMCARDEMU) )
 		EXIShutdown();
 
